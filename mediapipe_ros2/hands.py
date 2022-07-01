@@ -35,7 +35,7 @@ class Mediapipe(Node):
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(
                     static_image_mode=False,
-                    max_num_hands=2,
+                    max_num_hands=1,
                     min_detection_confidence=0.7)
 
         self.mp_drawing = mp.solutions.drawing_utils
