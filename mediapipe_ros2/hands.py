@@ -30,12 +30,12 @@ class Mediapipe(Node):
         self.bridge = CvBridge()
         self.create_subscription(Image,"image_raw",self.imageflow_callback, 10)
         self.pub_gesture = self.create_publisher(String, '/recognized_gesture', 10)
-        self.gesture = String()
+        self.command = String()
 
         self.mp_hands = mp.solutions.hands
         self.hands = self.mp_hands.Hands(
                     static_image_mode=False,
-                    max_num_hands=1,
+                    max_num_hands=2,
                     min_detection_confidence=0.7)
 
         self.mp_drawing = mp.solutions.drawing_utils
@@ -49,6 +49,17 @@ class Mediapipe(Node):
                 row[0] for row in keypoint_classifier_labels
             ]
 
+    def which_command(self, gestures):
+        if 'right_palm' in gestures and 'left_palm' in gestures:
+            return 'front'
+        if 'right_palm' in gestures:
+            return 'right'
+        if 'left_palm' in gestures:
+            return 'left'
+        if 'right_close' in gestures and 'left_close' in gestures:
+            return 'back'
+        return 'stop'
+
     def imageflow_callback(self,msg:Image) -> None:
         img_bgr = self.bridge.imgmsg_to_cv2(msg,"bgr8")
         img_flipped = cv2.flip(img_bgr, 1)
@@ -56,7 +67,8 @@ class Mediapipe(Node):
         results = self.hands.process(img_rgb)
 
         annotated_image = cv2.flip(img_bgr.copy(), 1)
-        if results.multi_hand_landmarks is not None and 'Left' not in str(results.multi_handedness):
+        if results.multi_hand_landmarks is not None:
+            gestures_detected = []
             for hand_landmarks in results.multi_hand_landmarks:
                 
                 self.mp_drawing.draw_landmarks(
@@ -72,8 +84,11 @@ class Mediapipe(Node):
                     landmark_list)
                 hand_sign_id = self.keypoint_classifier(pre_processed_landmark_list)
 
-                self.gesture.data = str(self.keypoint_classifier_labels[hand_sign_id])
-                self.pub_gesture.publish(self.gesture)
+                gestures_detected.append(str(self.keypoint_classifier_labels[hand_sign_id]))
+
+            self.command.data = self.which_command(gestures_detected)
+
+            self.pub_gesture.publish(self.command)
 
         cv2.imshow("YOLOX",annotated_image)
         cv2.waitKey(1)
