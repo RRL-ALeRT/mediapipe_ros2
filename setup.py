@@ -25,6 +25,7 @@ setup(
     entry_points={
         'console_scripts': [
             'hands = ' + package_name + '.hands:main',
+            'gesture_to_cmdvel = ' + package_name + '.gesture_to_cmdvel:main',
         ],
     },
 )

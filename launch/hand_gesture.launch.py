@@ -16,8 +16,12 @@ def generate_launch_description():
             {"video_device": video_device},
         ],
     )
+    gesture_to_cmdvel = launch_ros.actions.Node(
+        package="mediapipe_ros2", executable="gesture_to_cmdvel"
+    )
 
     return launch.LaunchDescription([
         hands,
         webcam,
+        gesture_to_cmdvel,
     ])
