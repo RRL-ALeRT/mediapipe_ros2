@@ -13,7 +13,8 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name), glob('./launch/*.launch.py')),
-        (os.path.join('share', package_name, 'keypoint_classifier'), glob('keypoint_classifier/*')),
+        (os.path.join('share', package_name, 'keypoint_classifier_hands'), glob('keypoint_classifier_hands/*')),
+        (os.path.join('share', package_name, 'keypoint_classifier_pose'), glob('keypoint_classifier_pose/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -25,6 +26,7 @@ setup(
     entry_points={
         'console_scripts': [
             'hands = ' + package_name + '.hands:main',
+            'pose = ' + package_name + '.pose:main',
         ],
     },
 )
