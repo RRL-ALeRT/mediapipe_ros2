@@ -84,6 +84,21 @@ class Mediapipe(Node):
             minimal_landmark_list = [landmark for i, landmark in enumerate(landmark_list)
                                      if i in [16, 14, 12, 11, 13, 15, 24, 23]]
             
+            # Training
+            # pre_processed_landmark_list = self.pre_process_landmark(minimal_landmark_list)
+
+            # logger.info(pre_processed_landmark_list)
+            # csv_path = '/home/skpawar1305/Desktop/keypoint_pose.csv'
+
+            # if self.count < 300:
+            #     self.count += 1
+            #     with open(csv_path, 'a', newline="") as f:
+            #         writer = csv.writer(f)
+            #         writer.writerow([4, *pre_processed_landmark_list])
+            # else:
+            #     exit()
+
+            # # Pretrained
             if '639' in str(minimal_landmark_list) or '479' in str(minimal_landmark_list):
                 logger.info('Make sure that upper body is in Frame')
                 self.command.data = 'stop'
