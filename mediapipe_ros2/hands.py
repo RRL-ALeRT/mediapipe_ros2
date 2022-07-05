@@ -17,9 +17,11 @@ from std_msgs.msg import String
 from loguru import logger
 
 from ament_index_python import get_package_share_directory
-keypoint_classifier_dir = os.path.join(get_package_share_directory('mediapipe_ros2'), 'keypoint_classifier')
+mediapipe_dir = get_package_share_directory('mediapipe_ros2')
+keypoint_classifier_dir = os.path.join(mediapipe_dir, 'keypoint_classifier')
 sys.path.append(keypoint_classifier_dir)
 from keypoint_classifier import KeyPointClassifier
+resource_dir = os.path.join(mediapipe_dir, 'resource')
 
 
 class Mediapipe(Node):
@@ -48,6 +50,23 @@ class Mediapipe(Node):
             self.keypoint_classifier_labels = [
                 row[0] for row in keypoint_classifier_labels
             ]
+
+        stop_img = cv2.imread(resource_dir + '/stop.png')
+        front_img = cv2.imread(resource_dir + '/front.png')
+        back_img = cv2.imread(resource_dir + '/back.png')
+        left_img = cv2.imread(resource_dir + '/left.png')
+        right_img = cv2.imread(resource_dir + '/right.png')
+        img_mask = cv2.cvtColor(stop_img, cv2.COLOR_BGR2GRAY)
+
+        self.img_mask = cv2.GaussianBlur(img_mask, (7,7), cv2.BORDER_DEFAULT)
+
+        self.image_dict = {
+            'stop': stop_img,
+            'front': front_img,
+            'back': back_img,
+            'left': left_img,
+            'right': right_img,
+        }
 
     def which_command(self, gestures):
         if 'right_palm' in gestures and 'left_palm' in gestures:
@@ -86,11 +105,15 @@ class Mediapipe(Node):
 
                 gestures_detected.append(str(self.keypoint_classifier_labels[hand_sign_id]))
 
-            self.command.data = self.which_command(gestures_detected)
+            command = self.which_command(gestures_detected)
+            annotated_image[self.img_mask != 0] = self.image_dict[command][self.img_mask != 0]
 
+            self.command.data = command
             self.pub_gesture.publish(self.command)
+        else:
+            annotated_image[self.img_mask != 0] = self.image_dict['stop'][self.img_mask != 0]
 
-        cv2.imshow("YOLOX",annotated_image)
+        cv2.imshow("mediapipe_hands",annotated_image)
         cv2.waitKey(1)
         
     def pre_process_landmark(self, landmark_list):

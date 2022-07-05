@@ -2,7 +2,7 @@
 ## Installation
 ```
 sudo apt install ros-foxy-v4l2-camera -y
-pip3 install mediapipe tensorflow sklearn
+pip3 install mediapipe tensorflow sklearn loguru
 ```
 ## Launch
 ```

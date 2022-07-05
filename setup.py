@@ -13,6 +13,7 @@ setup(
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
         (os.path.join('share', package_name), glob('./launch/*.launch.py')),
+        (os.path.join('share', package_name, 'resource'), glob('resource/*')),
         (os.path.join('share', package_name, 'keypoint_classifier'), glob('keypoint_classifier/*')),
     ],
     install_requires=['setuptools'],
