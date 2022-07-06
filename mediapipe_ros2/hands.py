@@ -113,7 +113,13 @@ class Mediapipe(Node):
         else:
             annotated_image[self.img_mask != 0] = self.image_dict['stop'][self.img_mask != 0]
 
-        cv2.imshow("mediapipe_hands",annotated_image)
+        scale_percent = 200 # percent of original size
+        width = int(annotated_image.shape[1] * scale_percent / 100)
+        height = int(annotated_image.shape[0] * scale_percent / 100)
+        dim = (width, height)
+        resized = cv2.resize(annotated_image, dim, interpolation = cv2.INTER_AREA)
+
+        cv2.imshow("mediapipe_hands",resized)
         cv2.waitKey(1)
         
     def pre_process_landmark(self, landmark_list):
