@@ -14,8 +14,6 @@ from rclpy.node import Node
 from sensor_msgs.msg import Image
 from std_msgs.msg import String
 
-from loguru import logger
-
 from ament_index_python import get_package_share_directory
 mediapipe_dir = get_package_share_directory('mediapipe_ros2')
 keypoint_classifier_dir = os.path.join(mediapipe_dir, 'keypoint_classifier')
